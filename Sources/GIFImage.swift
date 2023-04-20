@@ -8,6 +8,7 @@ public struct GIFImage: View {
     public let placeholder: RawImage
     public let errorImage: RawImage?
     private let presentationController: PresentationController
+    private let maxHeight: CGFloat?
 
     @Environment(\.imageLoader) var imageLoader
     @State @MainActor private var frame: RawImage?
@@ -63,6 +64,7 @@ public struct GIFImage: View {
         placeholder: RawImage = RawImage(),
         errorImage: RawImage? = nil,
         frameRate: FrameRate = .dynamic,
+        maxHeight: CGFloat? = nil,
         loopAction: @Sendable @escaping (GIFSource) async throws -> Void = { _ in }
     ) {
         self.source = source
@@ -70,6 +72,7 @@ public struct GIFImage: View {
         self._loop = loop
         self.placeholder = placeholder
         self.errorImage = errorImage
+        self.maxHeight = maxHeight
         
         self.presentationController = PresentationController(
             source: source,
@@ -85,6 +88,7 @@ public struct GIFImage: View {
             .resizable()
             .scaledToFill()
             .aspectRatio(contentMode: .fill)
+            .frame(maxHeight: maxHeight ?? nil)
             .scaleEffect(1.0001) // Needed because of SwiftUI sometimes incorrectly displaying landscape images.
             .clipped()
             .onChange(of: loop, perform: handle(loop:))
