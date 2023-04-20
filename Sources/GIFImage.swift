@@ -98,6 +98,7 @@ public struct GIFImage: View {
                 .frame(maxHeight: height ?? nil)
                 .scaleEffect(1.0001) // Needed because of SwiftUI sometimes incorrectly displaying landscape images.
                 .clipped()
+                .allowsHitTesting(false)
                 .onChange(of: loop, perform: handle(loop:))
                 .onChange(of: animate, perform: handle(animate:))
                 .task(id: source, load)
