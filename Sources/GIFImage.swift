@@ -11,6 +11,7 @@ public struct GIFImage: View {
     private let width: CGFloat?
     private let height: CGFloat?
     private var imageTapped: (() -> Void)?
+    private let contentMode: ContentMode
 
     @Environment(\.imageLoader) var imageLoader
     @State @MainActor private var frame: RawImage?
@@ -68,6 +69,7 @@ public struct GIFImage: View {
         frameRate: FrameRate = .dynamic,
         width: CGFloat? = nil,
         height: CGFloat? = nil,
+        contentMode: ContentMode = .fit,
         loopAction: @Sendable @escaping (GIFSource) async throws -> Void = { _ in },
         imageTapped: (() -> Void)? = nil
     ) {
@@ -79,6 +81,7 @@ public struct GIFImage: View {
         self.width = width
         self.height = height
         self.imageTapped = imageTapped
+        self.contentMode = contentMode
         
         self.presentationController = PresentationController(
             source: source,
@@ -94,7 +97,7 @@ public struct GIFImage: View {
             Image.loadImage(with: frame ?? placeholder)
                 .resizable()
                 .scaledToFill()
-                .aspectRatio(contentMode: .fill)
+                .aspectRatio(contentMode: contentMode)
                 .frame(maxHeight: height ?? nil)
                 .scaleEffect(1.0001) // Needed because of SwiftUI sometimes incorrectly displaying landscape images.
                 .clipped()
