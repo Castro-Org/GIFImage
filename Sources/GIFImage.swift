@@ -10,8 +10,7 @@ public struct GIFImage: View {
     private let presentationController: PresentationController
     private let width: CGFloat?
     private let height: CGFloat?
-    private let index: Int?
-    private var imageTapped: ((Int) -> Void)?
+    private var imageTapped: (() -> Void)?
 
     @Environment(\.imageLoader) var imageLoader
     @State @MainActor private var frame: RawImage?
@@ -69,9 +68,8 @@ public struct GIFImage: View {
         frameRate: FrameRate = .dynamic,
         width: CGFloat? = nil,
         height: CGFloat? = nil,
-        index: Int? = nil,
         loopAction: @Sendable @escaping (GIFSource) async throws -> Void = { _ in },
-        imageTapped: ((Int) -> Void)? = nil
+        imageTapped: (() -> Void)? = nil
     ) {
         self.source = source
         self._animate = animate
@@ -80,7 +78,6 @@ public struct GIFImage: View {
         self.errorImage = errorImage
         self.width = width
         self.height = height
-        self.index = index
         self.imageTapped = imageTapped
         
         self.presentationController = PresentationController(
@@ -116,7 +113,7 @@ public struct GIFImage: View {
                     .highPriorityGesture(
                         TapGesture()
                             .onEnded { _ in
-                                imageTapped(index ?? 0)
+                                imageTapped()
                             }
                     )
             }
