@@ -83,7 +83,10 @@ public struct GIFImage: View {
     public var body: some View {
         Image.loadImage(with: frame ?? placeholder)
             .resizable()
-            .scaledToFit()
+            .scaledToFill()
+            .aspectRatio(contentMode: .fill)
+            .scaleEffect(1.0001) // Needed because of SwiftUI sometimes incorrectly displaying landscape images.
+            .clipped()
             .onChange(of: loop, perform: handle(loop:))
             .onChange(of: animate, perform: handle(animate:))
             .task(id: source, load)
