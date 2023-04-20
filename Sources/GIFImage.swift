@@ -8,7 +8,10 @@ public struct GIFImage: View {
     public let placeholder: RawImage
     public let errorImage: RawImage?
     private let presentationController: PresentationController
-    private let maxHeight: CGFloat?
+    private let width: CGFloat?
+    private let height: CGFloat?
+    private let index: Int?
+    private var imageTapped: ((Int) -> Void)?
 
     @Environment(\.imageLoader) var imageLoader
     @State @MainActor private var frame: RawImage?
@@ -64,15 +67,21 @@ public struct GIFImage: View {
         placeholder: RawImage = RawImage(),
         errorImage: RawImage? = nil,
         frameRate: FrameRate = .dynamic,
-        maxHeight: CGFloat? = nil,
-        loopAction: @Sendable @escaping (GIFSource) async throws -> Void = { _ in }
+        width: CGFloat? = nil,
+        height: CGFloat? = nil,
+        index: Int? = nil,
+        loopAction: @Sendable @escaping (GIFSource) async throws -> Void = { _ in },
+        imageTapped: ((Int) -> Void)? = nil
     ) {
         self.source = source
         self._animate = animate
         self._loop = loop
         self.placeholder = placeholder
         self.errorImage = errorImage
-        self.maxHeight = maxHeight
+        self.width = width
+        self.height = height
+        self.index = index
+        self.imageTapped = imageTapped
         
         self.presentationController = PresentationController(
             source: source,
@@ -84,16 +93,34 @@ public struct GIFImage: View {
     }
 
     public var body: some View {
-        Image.loadImage(with: frame ?? placeholder)
-            .resizable()
-            .scaledToFill()
-            .aspectRatio(contentMode: .fill)
-            .frame(maxHeight: maxHeight ?? nil)
-            .scaleEffect(1.0001) // Needed because of SwiftUI sometimes incorrectly displaying landscape images.
-            .clipped()
-            .onChange(of: loop, perform: handle(loop:))
-            .onChange(of: animate, perform: handle(animate:))
-            .task(id: source, load)
+        ZStack {
+            Image.loadImage(with: frame ?? placeholder)
+                .resizable()
+                .scaledToFill()
+                .aspectRatio(contentMode: .fill)
+                .frame(maxHeight: height ?? nil)
+                .scaleEffect(1.0001) // Needed because of SwiftUI sometimes incorrectly displaying landscape images.
+                .clipped()
+                .onChange(of: loop, perform: handle(loop:))
+                .onChange(of: animate, perform: handle(animate:))
+                .task(id: source, load)
+            
+            if let imageTapped {
+                // NOTE: needed because of bug with SwiftUI.
+                // The click area expands outside the image view (although not visible).
+                Rectangle()
+                    .opacity(0.000001)
+                    .frame(width: width, height: height)
+                    .clipped()
+                    .allowsHitTesting(true)
+                    .highPriorityGesture(
+                        TapGesture()
+                            .onEnded { _ in
+                                imageTapped(index ?? 0)
+                            }
+                    )
+            }
+        }
     }
 
     private func handle(animate: Bool) {
