@@ -13,7 +13,7 @@ struct GIFImageEnvironment: EnvironmentKey {
     }()
 }
 
-extension EnvironmentValues {
+public extension EnvironmentValues {
     var imageLoader: ImageLoader {
         get { self[GIFImageEnvironment.self] }
         set { self[GIFImageEnvironment.self] = newValue }
