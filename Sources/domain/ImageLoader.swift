@@ -19,7 +19,7 @@ public struct ImageLoader {
         self.fileManager = fileManager
     }
     
-    public func set(cache: URLCache) {
+    public mutating func set(cache: URLCache) {
         self.cache = cache
     }
 
