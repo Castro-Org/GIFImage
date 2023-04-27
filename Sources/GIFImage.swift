@@ -96,7 +96,6 @@ public struct GIFImage: View {
         ZStack {
             Image.loadImage(with: frame ?? placeholder)
                 .resizable()
-                .scaledToFill()
                 .aspectRatio(contentMode: contentMode)
                 .frame(maxHeight: height ?? nil)
                 .scaleEffect(1.0001) // Needed because of SwiftUI sometimes incorrectly displaying landscape images.
