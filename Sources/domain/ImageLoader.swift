@@ -10,17 +10,13 @@ import Foundation
 /// Object responsible to load a `GIFSource` into a `ImageFrame` stream.
 public struct ImageLoader {
     public let session: URLSession
-    public private(set) var cache: URLCache
+    public let cache: URLCache
     public let fileManager: FileManager
 
     public init(session: URLSession = .shared, cache: URLCache = .shared, fileManager: FileManager = .default) {
         self.session = session
         self.cache = cache
         self.fileManager = fileManager
-    }
-    
-    public mutating func set(cache: URLCache) {
-        self.cache = cache
     }
 
     public func load(source: GIFSource) async throws -> CGImageSourceFrameSequence {
